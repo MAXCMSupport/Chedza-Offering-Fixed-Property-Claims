@@ -347,11 +347,18 @@
 <style>
   body { margin:0; background:#d8dbe3; font-family:'Mulish',sans-serif; }
   * { box-sizing:border-box; }
+
+  /* Responsive: scale the fixed 1680px canvas to fit narrow screens */
+  #flow-outer { min-height:100vh; display:flex; justify-content:center; padding:40px 32px; background:#d8dbe3; overflow-x:hidden; }
+  #flow-scaler { width:1680px; transform-origin:top center; }
+  #flow-canvas { width:1680px; background:#ebedf3; border-radius:6px; overflow:hidden; box-shadow:0 24px 70px rgba(20,34,76,.22); }
+  @media (max-width:1760px) { #flow-outer { padding:16px 8px; align-items:flex-start; } }
 </style>
 </helmet>
 
-<div style="min-height:100vh;display:flex;justify-content:center;padding:40px 32px;background:#d8dbe3;">
-<div style="width:1680px;background:#ebedf3;border-radius:6px;overflow:hidden;box-shadow:0 24px 70px rgba(20,34,76,.22);">
+<div id="flow-outer">
+<div id="flow-scaler">
+<div id="flow-canvas">
 
   <!-- ============ HEADER ============ -->
   <div style="position:relative;background:#14224c;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px;padding:46px 60px 44px;display:flex;justify-content:space-between;align-items:flex-start;">
@@ -610,7 +617,28 @@
   </div>
 </div>
 </div>
+</div>
 </x-dc>
+<script>
+  (function () {
+    var CANVAS_WIDTH = 1680;
+    var scaler = document.getElementById('flow-scaler');
+    var canvas = document.getElementById('flow-canvas');
+    function fit() {
+      var outer = document.getElementById('flow-outer');
+      var avail = outer.clientWidth - 16; // account for padding
+      var scale = Math.min(1, avail / CANVAS_WIDTH);
+      canvas.style.transform = 'scale(' + scale + ')';
+      canvas.style.transformOrigin = 'top center';
+      // collapse the empty space left by the transform
+      scaler.style.width = CANVAS_WIDTH + 'px';
+      scaler.style.height = (canvas.offsetHeight * scale) + 'px';
+    }
+    window.addEventListener('resize', fit);
+    window.addEventListener('load', fit);
+    fit();
+  })();
+</script>
 <script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1680}}"></script>
 
 
